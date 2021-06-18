@@ -271,33 +271,35 @@ public class Applet : Budgie.Applet
     		this.devices += "";
     		this.step_size += this.calculate_step_size(0);
     		this.max_brightness += this.get_brightness(true, 0);
+    		return;
     	}
     
-        try {
-            string[] spawn_args = {"ls", "/sys/class/backlight/"};
-            string[] spawn_env = Environ.get ();
-            string ls_stdout;
-            string ls_stderr;
-            int ls_status;
+    	for (int testing = 0 ; testing < 3 ; testing++ )
+		    try {
+		        string[] spawn_args = {"ls", "/sys/class/backlight/"};
+		        string[] spawn_env = Environ.get ();
+		        string ls_stdout;
+		        string ls_stderr;
+		        int ls_status;
 
-            Process.spawn_sync ("/",
-                spawn_args,
-                spawn_env,
-                SpawnFlags.SEARCH_PATH,
-                null,
-                out ls_stdout,
-                out ls_stderr,
-                out ls_status);
-                
-            string[] devicesFound = ls_stdout.split(" ");
-            for (int i = 0; i < devicesFound.length; i++) {
-            	this.devices += "/sys/class/backlight/".concat(devicesFound[i].strip());
-		    	this.max_brightness += this.get_brightness(true, i);
-		    	this.step_size += this.calculate_step_size(i);
-            }
-        } catch(SpawnError e){
-            error(e.message);
-        }
+		        Process.spawn_sync ("/",
+		            spawn_args,
+		            spawn_env,
+		            SpawnFlags.SEARCH_PATH,
+		            null,
+		            out ls_stdout,
+		            out ls_stderr,
+		            out ls_status);
+		            
+		        string[] devicesFound = ls_stdout.split(" ");
+		        for (int i = 0; i < devicesFound.length; i++) {
+		        	this.devices += "/sys/class/backlight/".concat(devicesFound[i].strip());
+					this.max_brightness += this.get_brightness(true, i);
+					this.step_size += this.calculate_step_size(i);
+		        }
+		    } catch(SpawnError e){
+		        error(e.message);
+		    }
     }
 
     /**
